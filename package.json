@@ -11,15 +11,9 @@
         "Other"
     ],
     "activationEvents": [
-        "onCommand:extension.sayHello"
+        "*"
     ],
     "main": "./out/src/extension",
-    "contributes": {
-        "commands": [{
-            "command": "extension.sayHello",
-            "title": "Hello World"
-        }]
-    },
     "scripts": {
         "vscode:prepublish": "tsc -p ./",
         "compile": "tsc -watch -p ./",
@@ -30,6 +24,7 @@
         "typescript": "^2.0.3",
         "vscode": "^1.0.0",
         "mocha": "^2.3.3",
+        "iconv-lite": "0.4.15",
         "@types/node": "^6.0.40",
         "@types/mocha": "^2.2.32"
     }
