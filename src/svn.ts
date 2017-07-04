@@ -15,32 +15,41 @@ export interface IExecutionResult {
     stderr: string;
 }
 
-export interface ISvn{
+export interface ISvn {
     path: string;
     version: string;
 }
 
 function findSpecificSvn(path: string): Promise<ISvn> {
-	return new Promise<ISvn>((c, e) => {
-		const buffers: Buffer[] = [];
-		const child = cp.spawn(path, ['--version']);
-		child.stdout.on('data', (b: Buffer) => buffers.push(b));
-		child.on('error', e);
-		child.on('exit', code => code ? e(new Error('Not found')) : c({ path, version: parseVersion(Buffer.concat(buffers).toString('utf8').trim()) }));
-	});
+    return new Promise<ISvn>((c, e) => {
+        const buffers: Buffer[] = [];
+        const child = cp.spawn(path, ['--version']);
+        child.stdout.on('data', (b: Buffer) => buffers.push(b));
+        child.on('error', e);
+        child.on('exit', code => code ? e(new Error('Not found')) : c({ path, version: parseVersion(Buffer.concat(buffers).toString('utf8').trim()) }));
+    });
 }
 
 export function findSvn(hint: string | undefined): Promise<ISvn> {
-	var first = hint ? findSpecificSvn(hint) : Promise.reject<ISvn>(null);
+    var first = hint ? findSpecificSvn(hint) : Promise.reject<ISvn>(null);
 
-	return first.then(void 0, () => {
-		 return findSpecificSvn('svn');
-	});
+    return first.then(void 0, () => {
+        let svnPath: string;
+        switch (process.platform) {
+            case ('win32'):
+                svnPath = 'svn.exe';
+                break;
+            default:
+                svnPath = 'svn';
+                break;
+        }
+        return findSpecificSvn(svnPath);
+    });
 }
 
 function parseVersion(raw: string): string {
     const regex = /^svn,? version (\d\.\d\.\d)/
-	const result = regex.exec(raw);
+    const result = regex.exec(raw);
     return result[1];
 }
 
