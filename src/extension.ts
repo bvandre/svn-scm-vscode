@@ -20,7 +20,12 @@ export function activate(context: ExtensionContext) {
 }
 
 async function init(context: ExtensionContext, disposables: Disposable[]): Promise<void> {
-    const info = await findSvn('svn');
+
+    var svn = "svn";
+    if (process.platform == 'win32') {
+        svn = "svn.exe";
+    }
+    const info = await findSvn(svn);
 }
 
 // this method is called when your extension is deactivated

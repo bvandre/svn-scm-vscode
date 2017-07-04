@@ -23,6 +23,7 @@
     "devDependencies": {
         "typescript": "^2.0.3",
         "vscode": "^1.0.0",
+        "svn-spawn": "^0.1.5",
         "vscode-nls": "^2.0.1",
         "mocha": "^2.3.3",
         "iconv-lite": "0.4.15",
