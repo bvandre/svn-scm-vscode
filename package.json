@@ -20,6 +20,24 @@
         "postinstall": "node ./node_modules/vscode/bin/install",
         "test": "node ./node_modules/vscode/bin/test"
     },
+    "contributes": {
+        "configuration": {
+            "type": "object",
+            "title": "SVN",
+            "properties": {
+                "svn.enabled": {
+                    "type": "boolean",
+                    "description": "Whether svn is enabled",
+                    "default": true
+                },
+                "svn.path": {
+                    "type": "string",
+                    "description": "Path to the svn executable",
+                    "default": null
+                }
+            }
+        }
+    },
     "devDependencies": {
         "typescript": "^2.0.3",
         "vscode": "^1.0.0",
