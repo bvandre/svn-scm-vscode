@@ -3,7 +3,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as os from 'os';
 import { IDisposable, toDisposable, dispose, assign, denodeify } from './util';
-import iconv = require('iconv-lite');
+import * as iconv from 'iconv-lite';
 import { EventEmitter } from 'events';
 
 const readdir = denodeify<string[]>(fs.readdir);
@@ -50,6 +50,9 @@ export function findSvn(hint: string | undefined): Promise<ISvn> {
 function parseVersion(raw: string): string {
     const regex = /^svn,? version (\d\.\d\.\d)/
     const result = regex.exec(raw);
+    if (!result) {
+        throw new Error('No version message was found');
+    }
     return result[1];
 }
 
@@ -76,12 +79,12 @@ async function exec(child: cp.ChildProcess, options: any = {}): Promise<IExecuti
         }),
         new Promise<string>(c => {
             const buffers: Buffer[] = [];
-            on(child.stdout, 'data', b => buffers.push(b));
+            on(child.stdout, 'data', (b: any) => buffers.push(b));
             once(child.stdout, 'close', () => c(iconv.decode(Buffer.concat(buffers), encoding)));
         }),
         new Promise<string>(c => {
             const buffers: Buffer[] = [];
-            on(child.stderr, 'data', b => buffers.push(b));
+            on(child.stderr, 'data', (b: any) => buffers.push(b));
             once(child.stderr, 'close', () => c(Buffer.concat(buffers).toString('utf8')));
         })
     ]);
