@@ -73,8 +73,7 @@ export function eventToPromise<T>(event: Event<T>): Promise<T> {
 	return new Promise<T>(c => once(event)(c));
 }
 
-// TODO@Joao: replace with Object.assign
-export function assign<T>(destination: T, ...sources: any[]): T {
+export function assign<T extends any>(destination: T, ...sources: any[]): T {
 	for (const source of sources) {
 		Object.keys(source).forEach(key => destination[key] = source[key]);
 	}
@@ -105,12 +104,12 @@ export function groupBy<T>(arr: T[], fn: (el: T) => string): { [key: string]: T[
 	}, Object.create(null));
 }
 
-export function denodeify<R>(fn: Function): (...args) => Promise<R> {
-	return (...args) => new Promise<R>((c, e) => fn(...args, (err, r) => err ? e(err) : c(r)));
+export function denodeify<R>(fn: Function): (...args: any[]) => Promise<R> {
+	return (...args) => new Promise<R>((c, e) => fn(...args, (err: any, r: R) => err ? e(err) : c(r)));
 }
 
-export function nfcall<R>(fn: Function, ...args): Promise<R> {
-	return new Promise<R>((c, e) => fn(...args, (err, r) => err ? e(err) : c(r)));
+export function nfcall<R>(fn: Function, ...args: any[]): Promise<R> {
+	return new Promise<R>((c, e) => fn(...args, (err: any, r: R) => err ? e(err) : c(r)));
 }
 
 export async function mkdirp(path: string, mode?: number): Promise<boolean> {
