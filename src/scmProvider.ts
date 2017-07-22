@@ -3,9 +3,9 @@
 import { scm, SourceControl } from "vscode";
 
 export class ScmProvider {
-    private mScm: SourceControl;
+	private mScm: SourceControl;
 
-    constructor() {
-        this.mScm = scm.createSourceControl("svn", "Svn");
-    }
+	constructor() {
+		this.mScm = scm.createSourceControl("svn", "Svn");
+	}
 }
