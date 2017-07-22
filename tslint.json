@@ -17,7 +17,8 @@
         ],
         "array-type": [
             false
-        ]
+        ],
+        "arrow-parens": false
     },
     "rulesDirectory": []
 }
