@@ -8,7 +8,7 @@
         "vscode": "^1.11.0"
     },
     "categories": [
-        "Other"
+        "SCM Providers"
     ],
     "activationEvents": [
         "*"
@@ -44,7 +44,6 @@
     },
     "devDependencies": {
         "typescript": "^2.0.3",
-        "svn-spawn": "^0.1.5",
         "mocha": "^2.3.3",
         "iconv-lite": "0.4.15",
         "@types/node": "^6.0.40",
