@@ -7,7 +7,9 @@
             "es6"
         ],
         "sourceMap": true,
-        "rootDir": "."
+        "rootDir": ".",
+        "allowJs": true,
+        "strict": true
     },
     "exclude": [
         "node_modules",

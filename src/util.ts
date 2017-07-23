@@ -1,50 +1,43 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
- * 
+ *
  *  Copied from Microsoft/vscode/extensions/git
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
+"use strict";
 
-import { Event } from 'vscode';
-import { dirname } from 'path';
-import * as fs from 'fs';
+import * as fs from "fs";
+import { dirname } from "path";
+import { Disposable, Event } from "vscode";
 
-export function log(...args: any[]): void {
-	console.log.apply(console, ['svn:', ...args]);
-}
-
-export interface IDisposable {
-	dispose(): void;
-}
-
-export function dispose<T extends IDisposable>(disposables: T[]): T[] {
-	disposables.forEach(d => d.dispose());
+export function dispose<T extends Disposable>(disposables: T[]): T[] {
+	disposables.forEach((d) => d.dispose());
 	return [];
 }
 
-export function toDisposable(dispose: () => void): IDisposable {
-	return { dispose };
+export function toDisposable(d: () => void): Disposable {
+	return { dispose: d };
 }
 
-export function combinedDisposable(disposables: IDisposable[]): IDisposable {
+export function combinedDisposable(disposables: Disposable[]): Disposable {
 	return toDisposable(() => dispose(disposables));
 }
 
 export const EmptyDisposable = toDisposable(() => null);
 
 export function mapEvent<I, O>(event: Event<I>, map: (i: I) => O): Event<O> {
-	return (listener, thisArgs = null, disposables?) => event(i => listener.call(thisArgs, map(i)), null, disposables);
+	return (listener, thisArgs = null, disposables?) => event((i) => listener.call(thisArgs, map(i)), null, disposables);
 }
 
 export function filterEvent<T>(event: Event<T>, filter: (e: T) => boolean): Event<T> {
-	return (listener, thisArgs = null, disposables?) => event(e => filter(e) && listener.call(thisArgs, e), null, disposables);
+	return (listener, thisArgs = null, disposables?) =>
+		event((e) => filter(e) && listener.call(thisArgs, e), null, disposables);
 }
 
 export function anyEvent<T>(...events: Event<T>[]): Event<T> {
 	return (listener, thisArgs = null, disposables?) => {
-		const result = combinedDisposable(events.map(event => event(i => listener.call(thisArgs, i))));
+		const result = combinedDisposable(events.map((event) => event((i) => listener.call(thisArgs, i))));
 
 		if (disposables) {
 			disposables.push(result);
@@ -60,7 +53,7 @@ export function done<T>(promise: Promise<T>): Promise<void> {
 
 export function once<T>(event: Event<T>): Event<T> {
 	return (listener, thisArgs = null, disposables?) => {
-		const result = event(e => {
+		const result = event((e) => {
 			result.dispose();
 			return listener.call(thisArgs, e);
 		}, null, disposables);
@@ -70,13 +63,12 @@ export function once<T>(event: Event<T>): Event<T> {
 }
 
 export function eventToPromise<T>(event: Event<T>): Promise<T> {
-	return new Promise<T>(c => once(event)(c));
+	return new Promise<T>((c) => once(event)(c));
 }
 
-// TODO@Joao: replace with Object.assign
-export function assign<T>(destination: T, ...sources: any[]): T {
+export function assign<T extends any>(destination: T, ...sources: any[]): T {
 	for (const source of sources) {
-		Object.keys(source).forEach(key => destination[key] = source[key]);
+		Object.keys(source).forEach((key) => destination[key] = source[key]);
 	}
 
 	return destination;
@@ -85,7 +77,7 @@ export function assign<T>(destination: T, ...sources: any[]): T {
 export function uniqBy<T>(arr: T[], fn: (el: T) => string): T[] {
 	const seen = Object.create(null);
 
-	return arr.filter(el => {
+	return arr.filter((el) => {
 		const key = fn(el);
 
 		if (seen[key]) {
@@ -105,12 +97,12 @@ export function groupBy<T>(arr: T[], fn: (el: T) => string): { [key: string]: T[
 	}, Object.create(null));
 }
 
-export function denodeify<R>(fn: Function): (...args) => Promise<R> {
-	return (...args) => new Promise<R>((c, e) => fn(...args, (err, r) => err ? e(err) : c(r)));
+export function denodeify<R>(fn: (...args: any[]) => any): (...args: any[]) => Promise<R> {
+	return (...args) => new Promise<R>((c, e) => fn(...args, (err: any, r: R) => err ? e(err) : c(r)));
 }
 
-export function nfcall<R>(fn: Function, ...args): Promise<R> {
-	return new Promise<R>((c, e) => fn(...args, (err, r) => err ? e(err) : c(r)));
+export function nfcall<R>(fn: (...args: any[]) => any, ...args: any[]): Promise<R> {
+	return new Promise<R>((c, e) => fn(...args, (err: any, r: R) => err ? e(err) : c(r)));
 }
 
 export async function mkdirp(path: string, mode?: number): Promise<boolean> {
@@ -118,7 +110,7 @@ export async function mkdirp(path: string, mode?: number): Promise<boolean> {
 		try {
 			await nfcall(fs.mkdir, path, mode);
 		} catch (err) {
-			if (err.code === 'EEXIST') {
+			if (err.code === "EEXIST") {
 				const stat = await nfcall<fs.Stats>(fs.stat, path);
 
 				if (stat.isDirectory) {
@@ -140,7 +132,7 @@ export async function mkdirp(path: string, mode?: number): Promise<boolean> {
 	try {
 		await mkdir();
 	} catch (err) {
-		if (err.code !== 'ENOENT') {
+		if (err.code !== "ENOENT") {
 			throw err;
 		}
 
@@ -154,7 +146,7 @@ export async function mkdirp(path: string, mode?: number): Promise<boolean> {
 export function uniqueFilter<T>(keyFn: (t: T) => string): (t: T) => boolean {
 	const seen: { [key: string]: boolean; } = Object.create(null);
 
-	return element => {
+	return (element) => {
 		const key = keyFn(element);
 
 		if (seen[key]) {
